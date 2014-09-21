@@ -21,7 +21,11 @@
         </div>
       </div>
     </div>
-
+    <div style="width: 300px; text-align: center">
+        <p><h3>Estadisticas</h3></p>
+        <p><h4>Blancas: </h4><input style="width: 36px" id="blancas-score" type="number" value="2"></p>
+        <p><h4>Negras: </h4><input style="width: 36px" id="negras-score" type="number" value="2"></p>
+    </div>
     <div id="main" class="container">
       <div id="game-board"></div>
       <div id="current-player">Jugador Actual: <span id="current-player-name">-</span></div>
@@ -37,6 +41,9 @@
               <option value="weighted-4">Weighted AI (looks ahead 4 moves)</option>
             </select>
           </label>
+            <label style="visibility: hidden">
+                <input id="profundidad" type="number" value="8">
+            </label>
           <label>
             Blancas:
             <select id="white-player-type">
@@ -48,8 +55,8 @@
         </div>
         <button id="swap-player-types-button" class="btn" type="button">⇅</button>
         <div>
-          <input id="new-ai-url" type="text" value="http://kana.github.io/othello-js/random-ai.js">
-          <button id="add-new-ai-button" class="btn" type="button">Add new AI</button>
+          <input id="new-ai-url" type="text" value="random-ai.js">
+          <button id="add-new-ai-button" class="btn" type="button">Agregar nuevo IA</button>
         </div>
         <button id="start-button" class="btn btn-primary" type="submit">Empezar juego nuevo</button>
       </div>

@@ -212,11 +212,14 @@ var othello = {};
   }
 
   // AI {{{1
-
+    /*
+    @param {board} tablero
+    @param {player} jugador
+    @return {integer}
+    */
   function scoreBoardBySimpleCount(board, player) {
     var opponent = nextPlayer(player);
-    return sum($.map(board, function (v) { return v == player;})) -
-           sum($.map(board, function (v) { return v == opponent;}));
+    return sum($.map(board, function (v) { return v == player;})) - sum($.map(board, function (v) { return v == opponent;}));
   }
 
   var weightTable =
@@ -248,13 +251,15 @@ var othello = {};
           config.scoreBoard
         );
         var maxRating = Math.max.apply(null, ratings);
+          console.log('ratings: ' + ratings);
+          console.log('maxRating: ' + maxRating);
         return gameTree.moves[ratings.indexOf(maxRating)];
       }
     };
   }
 
   var aiTable = {
-    'test-4': makeAI({level: 4, scoreBoard: scoreBoardBySimpleCount}),
+    'test-4': makeAI({level: $('#profundidad').val(), scoreBoard: scoreBoardBySimpleCount}),
     'weighted-4': makeAI({level: 4, scoreBoard: scoreBoardByWeightedCount})
   };
 
@@ -433,6 +438,9 @@ var othello = {};
     $('#message').empty();
   }
 
+    /*
+    * @gameTree es el arbol de jugadas posibles para desplegar
+    * */
   function setUpUIToChooseMove(gameTree) {
     $('#message').text('Elegir jugada.');
     gameTree.moves.forEach(function (m, i) {
@@ -452,6 +460,17 @@ var othello = {};
       }
     });
   }
+
+    function actualizarScore(values, search) {
+
+        var total = 0;
+        $.each(values, function(i, objeto){
+            if(objeto == search)
+                total++;
+        });
+
+        return total;
+    }
 
   function makeLabelForMove(move) {
     if (move.isPassingMove)
@@ -486,9 +505,7 @@ var othello = {};
         nt[board[[x, y]]]++;
 
     $('#message').text(
-      nt[BLACK] == nt[WHITE]
-      ? 'El juego ha terminado en tablas.'
-      : 'El ganador es ' + (nt[WHITE] < nt[BLACK] ? BLACK : WHITE) + '.'
+        nt[BLACK] == nt[WHITE]? 'El juego ha terminado en tablas.' : 'El ganador es ' + (nt[WHITE] < nt[BLACK] ? BLACK : WHITE) + '.'
     );
   }
 
@@ -501,8 +518,14 @@ var othello = {};
     $('#white-player-type').val(t);
   }
 
+    /*
+    * @gameTree objeto con el dibujo del tablero, el jugador actual y las jugadas posibles y gameTreePromise
+    * */
   function shiftToNewGameTree(gameTree) {
+      //console.log('gameTree' + JSON.stringify(gameTree));
     drawGameBoard(gameTree.board, gameTree.player, gameTree.moves);
+      $('#blancas-score').val(actualizarScore(gameTree.board, 'white'));
+      $('#negras-score').val(actualizarScore(gameTree.board, 'black'));
     resetUI();
     if (gameTree.moves.length == 0) {
       showWinner(gameTree.board);
