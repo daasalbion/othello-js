@@ -243,6 +243,8 @@ var othello = {};
   function makeAI(config) {
     return {
       findTheBestMove: function (gameTree) {
+        var diferenciaTiempo = 0;
+          var tiempoActual1 = new Date();
         var ratings = calculateMaxRatings(
           limitGameTreeDepth(gameTree, config.level),
           gameTree.player,
@@ -253,6 +255,9 @@ var othello = {};
         var maxRating = Math.max.apply(null, ratings);
           console.log('ratings: ' + ratings);
           console.log('maxRating: ' + maxRating);
+          var tiempoActual2 = new Date();
+          diferenciaTiempo = tiempoActual2.getTime() - tiempoActual1.getTime();
+          $('#tiempo').val(diferenciaTiempo);
         return gameTree.moves[ratings.indexOf(maxRating)];
       }
     };
