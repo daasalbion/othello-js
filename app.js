@@ -1,6 +1,7 @@
 var othello = {};
 
 (function () {
+
   // Utilities {{{1
 
   function memoize(f) {
@@ -42,9 +43,6 @@ var othello = {};
     return ns.reduce(function (t, n) {return t + n;});
   }
 
-
-
-
   // Core logic {{{1
 
   var N = 8;
@@ -53,6 +51,10 @@ var othello = {};
   var WHITE = 'white';
   var BLACK = 'black';
 
+  /*
+  *se inicia el tablero
+  *se colocan los 4 elementos iniciales
+  * */
   function makeInitialGameBoard() {
     var board = {};
 
@@ -70,6 +72,12 @@ var othello = {};
     return board;
   }
 
+    /*
+    * @board tablero
+    * @player jugador
+    * @wasPassed false al inicio
+    * @nest 1 al inicio
+    * */
   function makeGameTree(board, player, wasPassed, nest) {
     return {
       board: board,
@@ -78,6 +86,12 @@ var othello = {};
     };
   }
 
+    /*
+     * @board tablero
+     * @player jugador
+     * @wasPassed false al inicio
+     * @nest 1 al inicio
+     * */
   function listPossibleMoves(board, player, wasPassed, nest) {
     return completePassingMove(
       listAttackingMoves(board, player, nest),
@@ -102,6 +116,11 @@ var othello = {};
       return [];
   }
 
+    /*
+     * @board tablero
+     * @player jugador
+     * @nest 1 al inicio
+     * */
   function listAttackingMoves(board, player, nest) {
     var moves = [];
 
@@ -140,11 +159,17 @@ var othello = {};
 
   function makeAttackedBoard(board, vulnerableCells, player) {
     var newBoard = JSON.parse(JSON.stringify(board));
-    for (i = 0; i < vulnerableCells.length; i++)
+    for (var i = 0; i < vulnerableCells.length; i++)
       newBoard[vulnerableCells[i]] = player;
     return newBoard;
   }
 
+    /*
+    * @board tablero
+    * @x posicion x donde se puede jugar
+    * @y posicion y donde se puede jugar
+    * @player jugador
+    * */
   function listVulnerableCells(board, x, y, player) {
     var vulnerableCells = [];
 
@@ -176,9 +201,6 @@ var othello = {};
     return vulnerableCells;
   }
 
-
-
-
   // AI {{{1
 
   function scoreBoardBySimpleCount(board, player) {
@@ -197,6 +219,7 @@ var othello = {};
             (y == 0 || y == N - 1 ? 10 : 1);
       return t;
     })();
+
   function scoreBoardByWeightedCount(board, player) {
     var opponent = nextPlayer(player);
     var wt = weightTable;
@@ -314,9 +337,6 @@ var othello = {};
     return ratings;
   }
 
-
-
-
   // API {{{1
 
   var lastAIType;
@@ -355,9 +375,6 @@ var othello = {};
       );
     }
   }
-
-
-
 
   // UI {{{1
 
@@ -407,7 +424,7 @@ var othello = {};
   }
 
   function setUpUIToChooseMove(gameTree) {
-    $('#message').text('Choose your move.');
+    $('#message').text('Elegir jugada.');
     gameTree.moves.forEach(function (m, i) {
       if (m.isPassingMove) {
         $('#console').append(
@@ -438,7 +455,7 @@ var othello = {};
   }
 
   function chooseMoveByAI(gameTree, ai) {
-    $('#message').text('Now thinking...');
+    $('#message').text('Pensando...');
     setTimeout(
       function () {
         shiftToNewGameTree(
@@ -460,11 +477,12 @@ var othello = {};
 
     $('#message').text(
       nt[BLACK] == nt[WHITE]
-      ? 'The game ends in a draw.'
-      : 'The winner is ' + (nt[WHITE] < nt[BLACK] ? BLACK : WHITE) + '.'
+      ? 'El juego ha terminado en tablas.'
+      : 'El ganador es ' + (nt[WHITE] < nt[BLACK] ? BLACK : WHITE) + '.'
     );
   }
 
+    //objeto jugador
   var playerTypeTable = {};
 
   function swapPlayerTypes() {
@@ -503,9 +521,6 @@ var othello = {};
     shiftToNewGameTree(makeGameTree(makeInitialGameBoard(), BLACK, false, 1));
   }
 
-
-
-
   // Startup {{{1
 
   $('#start-button').click(function () {startNewGame();});
@@ -514,4 +529,5 @@ var othello = {};
   resetGame();
   drawGameBoard(makeInitialGameBoard(), '-', []);
 })();
+
 // vim: expandtab softtabstop=2 shiftwidth=2 foldmethod=marker
