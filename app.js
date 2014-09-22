@@ -3,6 +3,7 @@ var othello = {};
 (function () {
 
   // Utilities {{{1
+    var cantidad_nodos_visitados = 0;
 
   function memoize(f) {
     var memo = {};
@@ -244,7 +245,8 @@ var othello = {};
     return {
       findTheBestMove: function (gameTree) {
         var diferenciaTiempo = 0;
-          var tiempoActual1 = new Date();
+        cantidad_nodos_visitados = 0;
+        var tiempoActual1 = new Date();
         var ratings = calculateMaxRatings(
           limitGameTreeDepth(gameTree, config.level),
           gameTree.player,
@@ -258,6 +260,7 @@ var othello = {};
           var tiempoActual2 = new Date();
           diferenciaTiempo = tiempoActual2.getTime() - tiempoActual1.getTime();
           $('#tiempo').val(diferenciaTiempo);
+          $('#cantidad_nodos').val(cantidad_nodos_visitados);
         return gameTree.moves[ratings.indexOf(maxRating)];
       }
     };
@@ -330,6 +333,7 @@ var othello = {};
         upperLimit,
         scoreBoard
       );
+      cantidad_nodos_visitados++;
       ratings.push(r);
       if (upperLimit <= r)
         break;
@@ -349,6 +353,7 @@ var othello = {};
         newUpperLimit,
         scoreBoard
       );
+      cantidad_nodos_visitados++;
       ratings.push(r);
       if (r <= lowerLimit)
         break;

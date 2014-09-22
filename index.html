@@ -26,6 +26,7 @@
         <p><h4>Blancas: </h4><input style="width: 36px" id="blancas-score" type="number" value="2"></p>
         <p><h4>Negras: </h4><input style="width: 36px" id="negras-score" type="number" value="2"></p>
         <p><h4>Tiempo: </h4><input style="width: 100px" id="tiempo" type="number" value="0"></p>
+        <p><h4>Cantidad de nodos: </h4><input style="width: 100px" id="cantidad_nodos" type="number" value="0"></p>
     </div>
     <div id="main" class="container">
       <div id="game-board"></div>
@@ -43,14 +44,14 @@
             </select>
           </label>
             <label style="visibility: hidden">
-                <input id="profundidad" type="number" value="8">
+                <input id="profundidad" type="number" value="1">
             </label>
           <label>
             Blancas:
             <select id="white-player-type">
               <option value="human">Human</option>
-              <option value="test-4">Test AI (looks ahead 4 moves)</option>
-              <option value="weighted-4" selected>Weighted AI (looks ahead 4 moves)</option>
+              <option value="test-4" selected>Test AI (looks ahead 4 moves)</option>
+              <option value="weighted-4">Weighted AI (looks ahead 4 moves)</option>
             </select>
           </label>
         </div>
