@@ -11,29 +11,30 @@
     <div class="navbar navbar-inverse">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href=".">Othello JS</a>
+          <a class="brand" href=".">Grupo 9 - Othello JS</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href=".">Home</a></li>
-              <li><a href="https://github.com/kana/othello-js">Code</a></li>
+              <li class="active"><a href=".">Reiniciar</a></li>
             </ul>
           </div>
         </div>
       </div>
     </div>
-    <div style="width: 300px; text-align: center">
-        <p><h3>Estadisticas</h3></p>
-        <p><h4>Blancas: </h4><input style="width: 36px" id="blancas-score" type="number" value="2"></p>
-        <p><h4>Negras: </h4><input style="width: 36px" id="negras-score" type="number" value="2"></p>
-        <p><h4>Tiempo: </h4><input style="width: 100px" id="tiempo" type="number" value="0"></p>
-        <p><h4>Cantidad de nodos: </h4><input style="width: 100px" id="cantidad_nodos" type="number" value="0"></p>
-    </div>
     <div id="main" class="container">
-      <div id="game-board"></div>
-      <div id="current-player">Jugador Actual: <span id="current-player-name">-</span></div>
-      <div id="message"></div>
-      <div id="console"></div>
-      <div id="preference-pane">
+        <div style="width: 300px; text-align: left; float: left">
+            <p><h3>Estadisticas</h3></p>
+            <p><h4>Blancas: </h4><input style="width: 36px" id="blancas-score" type="number" value="2"></p>
+            <p><h4>Negras: </h4><input style="width: 36px" id="negras-score" type="number" value="2"></p>
+            <p><h4>Tiempo: </h4><input style="width: 100px" id="tiempo" type="number" value="0"></p>
+            <p><h4>Cantidad de nodos: </h4><input style="width: 100px" id="cantidad_nodos" type="number" value="0"></p>
+        </div>
+        <div style="float: left; margin-left: 66px">
+          <div id="game-board"></div>
+          <div id="current-player">Jugador Actual: <span id="current-player-name">-</span></div>
+          <div id="message"></div>
+          <div id="console"></div>
+        </div>
+      <div id="preference-pane" style="float: left; width: 300px; margin-left: 100px">
         <div id="player-type-forms">
           <label>
             Negras:
