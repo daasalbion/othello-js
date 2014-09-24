@@ -244,6 +244,7 @@ var othello = {};
     })();
 
     function scoreBoardByWeightedCount(board, player) {
+
         var opponent = nextPlayer(player);
         var wt = weightTable;
         return sum($.map(board, function (v, p) {return (v == player) * wt[p];})) -
@@ -279,6 +280,7 @@ var othello = {};
     }
 
     var aiTable = {
+
         'test-4': makeAI({
             level: $('#profundidad').val(),
             scoreBoard: scoreBoardBySimpleCount
@@ -321,65 +323,68 @@ var othello = {};
     }
 
     function calculateRatings(gameTree, player, scoreBoard) {
-    return gameTree.moves.map(function (m) {
-      return ratePosition(force(m.gameTreePromise), player, scoreBoard);
-    });
+        return gameTree.moves.map(function (m) {
+          return ratePosition(force(m.gameTreePromise), player, scoreBoard);
+        });
     }
 
     function ratePositionWithAlphaBetaPruning(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
-    if (1 <= gameTree.moves.length) {
-      var judge =
-        gameTree.player == player
-        ? Math.max
-        : Math.min;
-      var rate =
-        gameTree.player == player
-        ? calculateMaxRatings
-        : calculateMinRatings;
-      return judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
-    } else {
-      return scoreBoard(gameTree.board, player);
-    }
+
+        if (1 <= gameTree.moves.length) {
+          var judge =
+            gameTree.player == player
+            ? Math.max
+            : Math.min;
+          var rate =
+            gameTree.player == player
+            ? calculateMaxRatings
+            : calculateMinRatings;
+          return judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
+        } else {
+          return scoreBoard(gameTree.board, player);
+        }
     }
 
     function calculateMaxRatings(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
-    var ratings = [];
-    var newLowerLimit = lowerLimit;
-    for (var i = 0; i < gameTree.moves.length; i++) {
-      var r = ratePositionWithAlphaBetaPruning(
-        force(gameTree.moves[i].gameTreePromise),
-        player,
-        newLowerLimit,
-        upperLimit,
-        scoreBoard
-      );
-      cantidad_nodos_visitados++;
-      ratings.push(r);
-      if (upperLimit <= r)
-        break;
-      newLowerLimit = Math.max(r, newLowerLimit);
-    }
-    return ratings;
+
+        var ratings = [];
+        var newLowerLimit = lowerLimit;
+        for (var i = 0; i < gameTree.moves.length; i++) {
+          var r = ratePositionWithAlphaBetaPruning(
+            force(gameTree.moves[i].gameTreePromise),
+            player,
+            newLowerLimit,
+            upperLimit,
+            scoreBoard
+          );
+          cantidad_nodos_visitados++;
+          ratings.push(r);
+          if (upperLimit <= r)
+            break;
+          newLowerLimit = Math.max(r, newLowerLimit);
+        }
+        return ratings;
     }
 
     function calculateMinRatings(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
-    var ratings = [];
-    var newUpperLimit = upperLimit;
-    for (var i = 0; i < gameTree.moves.length; i++) {
-      var r = ratePositionWithAlphaBetaPruning(
-        force(gameTree.moves[i].gameTreePromise),
-        player,
-        upperLimit,
-        newUpperLimit,
-        scoreBoard
-      );
-      cantidad_nodos_visitados++;
-      ratings.push(r);
-      if (r <= lowerLimit)
-        break;
-      newUpperLimit = Math.min(r, newUpperLimit);
-    }
-    return ratings;
+
+        var ratings = [];
+        var newUpperLimit = upperLimit;
+        for (var i = 0; i < gameTree.moves.length; i++) {
+          var r = ratePositionWithAlphaBetaPruning(
+            force(gameTree.moves[i].gameTreePromise),
+            player,
+            upperLimit,
+            newUpperLimit,
+            scoreBoard
+          );
+          cantidad_nodos_visitados++;
+          ratings.push(r);
+          if (r <= lowerLimit)
+            break;
+          newUpperLimit = Math.min(r, newUpperLimit);
+        }
+        return ratings;
     }
 
     // API {{{1
