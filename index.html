@@ -22,11 +22,11 @@
     </div>
     <div id="main" class="container">
         <div style="width: 300px; text-align: left; float: left">
-            <p><h3>Estadisticas</h3></p>
-            <p><h4>Blancas: </h4><input style="width: 36px" id="blancas-score" type="number" value="2"></p>
-            <p><h4>Negras: </h4><input style="width: 36px" id="negras-score" type="number" value="2"></p>
-            <p><h4>Tiempo: </h4><input style="width: 100px" id="tiempo" type="number" value="0"></p>
-            <p><h4>Cantidad de nodos: </h4><input style="width: 100px" id="cantidad_nodos" type="number" value="0"></p>
+            <h3>Estadisticas</h3>
+            <h4>Blancas: <input style="width: 36px" id="blancas-score" type="number" value="2"></h4>
+            <h4>Negras: <input style="width: 36px" id="negras-score" type="number" value="2"></h4>
+            <h4>Tiempo: <input style="width: 100px" id="tiempo" type="number" value="0"></h4>
+            <h4>Cantidad de nodos: <input style="width: 100px" id="cantidad_nodos" type="number" value="0"></h4>
         </div>
         <div style="float: left; margin-left: 66px">
           <div id="game-board"></div>
@@ -44,9 +44,7 @@
               <option value="weighted-4">Weighted AI (looks ahead 4 moves)</option>
             </select>
           </label>
-            <label style="visibility: hidden">
-                <input id="profundidad" type="number" value="1">
-            </label>
+
           <label>
             Blancas:
             <select id="white-player-type">
@@ -57,6 +55,10 @@
           </label>
         </div>
         <button id="swap-player-types-button" class="btn" type="button">⇅</button>
+      <label>
+          Nivel:
+          <input id="profundidad" type="number" value="8">
+      </label>
         <div>
           <input id="new-ai-url" type="text" value="random-ai.js">
           <button id="add-new-ai-button" class="btn" type="button">Agregar nuevo IA</button>

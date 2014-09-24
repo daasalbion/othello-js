@@ -158,11 +158,13 @@ var othello = {};
     }
 
     function nextPlayer(player) {
-    return player == BLACK ? WHITE : BLACK;
+
+        return player == BLACK ? WHITE : BLACK;
     }
 
     function canAttack(vulnerableCells) {
-    return vulnerableCells.length;
+
+        return vulnerableCells.length;
     }
 
     /*
@@ -172,6 +174,7 @@ var othello = {};
     * @player jugador
     * */
     function makeAttackedBoard(board, vulnerableCells, player) {
+
         var newBoard = JSON.parse(JSON.stringify(board));
         for (var i = 0; i < vulnerableCells.length; i++)
           newBoard[vulnerableCells[i]] = player;
@@ -224,6 +227,7 @@ var othello = {};
     @return {integer}
     */
     function scoreBoardBySimpleCount(board, player) {
+
         var opponent = nextPlayer(player);
         return sum($.map(board, function (v) { return v == player;})) - sum($.map(board, function (v) { return v == opponent;}));
     }
@@ -240,10 +244,10 @@ var othello = {};
     })();
 
     function scoreBoardByWeightedCount(board, player) {
-    var opponent = nextPlayer(player);
-    var wt = weightTable;
-    return sum($.map(board, function (v, p) {return (v == player) * wt[p];})) -
-           sum($.map(board, function (v, p) {return (v == opponent) * wt[p];}));
+        var opponent = nextPlayer(player);
+        var wt = weightTable;
+        return sum($.map(board, function (v, p) {return (v == player) * wt[p];})) -
+               sum($.map(board, function (v, p) {return (v == opponent) * wt[p];}));
     }
 
     function makeAI(config) {
@@ -275,37 +279,45 @@ var othello = {};
     }
 
     var aiTable = {
-    'test-4': makeAI({level: $('#profundidad').val(), scoreBoard: scoreBoardBySimpleCount}),
-    'weighted-4': makeAI({level: 4, scoreBoard: scoreBoardByWeightedCount})
+        'test-4': makeAI({
+            level: $('#profundidad').val(),
+            scoreBoard: scoreBoardBySimpleCount
+        }),
+        'weighted-4': makeAI({
+            level: 4,
+            scoreBoard: scoreBoardByWeightedCount
+        })
     };
 
     function limitGameTreeDepth(gameTree, depth) {
-    return {
-      board: gameTree.board,
-      player: gameTree.player,
-      moves:
-        depth == 0
-        ? []
-        : gameTree.moves.map(function (m) {
-            return {
-              isPassingMove: m.isPassingMove,
-              x: m.x,
-              y: m.y,
-              gameTreePromise: delay(function () {
-                return limitGameTreeDepth(force(m.gameTreePromise), depth - 1);
+
+        return {
+          board: gameTree.board,
+          player: gameTree.player,
+          moves:
+            depth == 0
+            ? []
+            : gameTree.moves.map(function (m) {
+                return {
+                  isPassingMove: m.isPassingMove,
+                  x: m.x,
+                  y: m.y,
+                  gameTreePromise: delay(function () {
+                    return limitGameTreeDepth(force(m.gameTreePromise), depth - 1);
+                  })
+                };
               })
-            };
-          })
-    };
+        };
     }
 
     function ratePosition(gameTree, player, scoreBoard) {
-    if (1 <= gameTree.moves.length) {
-      var choose = gameTree.player == player ? Math.max : Math.min;
-      return choose.apply(null, calculateRatings(gameTree, player, scoreBoard));
-    } else {
-      return scoreBoard(gameTree.board, player);
-    }
+
+        if (1 <= gameTree.moves.length) {
+          var choose = gameTree.player == player ? Math.max : Math.min;
+          return choose.apply(null, calculateRatings(gameTree, player, scoreBoard));
+        } else {
+          return scoreBoard(gameTree.board, player);
+        }
     }
 
     function calculateRatings(gameTree, player, scoreBoard) {
@@ -375,7 +387,8 @@ var othello = {};
     var lastAIType;
 
     othello.registerAI = function (ai) {
-    aiTable[lastAIType] = ai;
+
+        aiTable[lastAIType] = ai;
     };
 
     othello.force = force;
@@ -386,27 +399,27 @@ var othello = {};
     othello.nextPlayer = nextPlayer;
 
     function addNewAI() {
-    var aiUrl = $('#new-ai-url').val();
-    var originalLabel = $('#add-new-ai-button').text();
-    if (aiTable[aiUrl] == null) {
-      lastAIType = aiUrl;
-      $('#add-new-ai-button').text('Loading...').prop('disabled', true);
-      $.getScript(aiUrl, function () {
-        $('#black-player-type, #white-player-type').append(
-          '<option value="' + aiUrl + '">' + aiUrl + '</option>'
-        );
-        $('#white-player-type').val(aiUrl);
-        $('#add-new-ai-button').text(originalLabel).removeProp('disabled');
-      });
-    } else {
-      $('#add-new-ai-button').text('Already loaded').prop('disabled', true);
-      setTimeout(
-        function () {
-          $('#add-new-ai-button').text(originalLabel).removeProp('disabled');
-        },
-        1000
-      );
-    }
+        var aiUrl = $('#new-ai-url').val();
+        var originalLabel = $('#add-new-ai-button').text();
+        if (aiTable[aiUrl] == null) {
+          lastAIType = aiUrl;
+          $('#add-new-ai-button').text('Loading...').prop('disabled', true);
+          $.getScript(aiUrl, function () {
+            $('#black-player-type, #white-player-type').append(
+              '<option value="' + aiUrl + '">' + aiUrl + '</option>'
+            );
+            $('#white-player-type').val(aiUrl);
+            $('#add-new-ai-button').text(originalLabel).removeProp('disabled');
+          });
+        } else {
+          $('#add-new-ai-button').text('Already loaded').prop('disabled', true);
+          setTimeout(
+            function () {
+              $('#add-new-ai-button').text(originalLabel).removeProp('disabled');
+            },
+            1000
+          );
+        }
     }
 
     // UI {{{1
@@ -582,6 +595,7 @@ var othello = {};
     $('#swap-player-types-button').click(function () {swapPlayerTypes();});
     resetGame();
     drawGameBoard(makeInitialGameBoard(), '-', []);
+
 })();
 
 // vim: expandtab softtabstop=2 shiftwidth=2 foldmethod=marker
