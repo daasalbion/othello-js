@@ -253,44 +253,83 @@ var othello = {};
 
     function makeAI(config) {
 
-        return {
+        var algoritmo;
+        if( config.algoritmo == 'minimax_poda_alfa_beta' ){
+            algoritmo = {
+                findTheBestMove: function (gameTree) {
 
-            findTheBestMove: function (gameTree) {
-
-                var diferenciaTiempo;
-                cantidad_nodos_visitados = 0;
-                var tiempoActual1 = new Date();
-                var ratings = calculateMaxRatings(
-                    limitGameTreeDepth(gameTree, config.level),
-                    gameTree.player,
-                    Number.MIN_VALUE,
-                    Number.MAX_VALUE,
-                    config.scoreBoard
-                );
-                var maxRating = Math.max.apply(null, ratings);
-                console.log('ratings: ' + ratings);
-                console.log('maxRating: ' + maxRating);
-                var tiempoActual2 = new Date();
-                diferenciaTiempo = tiempoActual2.getTime() - tiempoActual1.getTime();
-                $('#tiempo').val(diferenciaTiempo);
-                $('#cantidad_nodos').val(cantidad_nodos_visitados);
-                return gameTree.moves[ratings.indexOf(maxRating)];
+                    var diferenciaTiempo;
+                    cantidad_nodos_visitados = 0;
+                    var tiempoActual1 = new Date();
+                    var ratings = calculateMaxRatings(
+                        limitGameTreeDepth(gameTree, config.level),
+                        gameTree.player,
+                        Number.MIN_VALUE,
+                        Number.MAX_VALUE,
+                        config.scoreBoard
+                    );
+                    var maxRating = Math.max.apply(null, ratings);
+                    console.log('ratings: ' + ratings);
+                    console.log('maxRating: ' + maxRating);
+                    var tiempoActual2 = new Date();
+                    diferenciaTiempo = tiempoActual2.getTime() - tiempoActual1.getTime();
+                    $('#tiempo').val(diferenciaTiempo);
+                    $('#cantidad_nodos').val(cantidad_nodos_visitados);
+                    return gameTree.moves[ratings.indexOf(maxRating)];
+                }
             }
-        };
+        }else if( config.algoritmo == 'minimax' ){
+
+            algoritmo = {
+                findTheBestMove: function (gameTree) {
+
+                    var diferenciaTiempo;
+                    cantidad_nodos_visitados = 0;
+                    var tiempoActual1 = new Date();
+                    var ratings = calculateMaxRatings(
+                        limitGameTreeDepth(gameTree, config.level),
+                        gameTree.player,
+                        Number.MIN_VALUE,
+                        Number.MAX_VALUE,
+                        config.scoreBoard
+                    );
+                    var maxRating = Math.max.apply(null, ratings);
+                    console.log('ratings: ' + ratings);
+                    console.log('maxRating: ' + maxRating);
+                    var tiempoActual2 = new Date();
+                    diferenciaTiempo = tiempoActual2.getTime() - tiempoActual1.getTime();
+                    $('#tiempo').val(diferenciaTiempo);
+                    $('#cantidad_nodos').val(cantidad_nodos_visitados);
+                    return gameTree.moves[ratings.indexOf(maxRating)];
+                }
+            }
+        }
+
+        return algoritmo;
     }
 
     var aiTable = {
 
         'test-4': makeAI({
             level: $('#profundidad').val(),
-            scoreBoard: scoreBoardBySimpleCount
+            scoreBoard: scoreBoardBySimpleCount,
+            algoritmo: 'minimax_poda_alfa_beta'
         }),
         'weighted-4': makeAI({
             level: 4,
-            scoreBoard: scoreBoardByWeightedCount
+            scoreBoard: scoreBoardByWeightedCount,
+            algoritmo: 'minimax_poda_alfa_beta'
+        }),
+        'minimax': makeAI({
+            level: 4,
+            scoreBoard: scoreBoardByWeightedCount,
+            algoritmo: 'minimax'
         })
     };
 
+    /*
+    * Genera el arbol ya con el limite de profundidad de busqueda
+    * */
     function limitGameTreeDepth(gameTree, depth) {
 
         return {
@@ -315,33 +354,41 @@ var othello = {};
     function ratePosition(gameTree, player, scoreBoard) {
 
         if (1 <= gameTree.moves.length) {
-          var choose = gameTree.player == player ? Math.max : Math.min;
-          return choose.apply(null, calculateRatings(gameTree, player, scoreBoard));
+
+            var choose = gameTree.player == player ? Math.max : Math.min;
+            return choose.apply(null, calculateRatings(gameTree, player, scoreBoard));
         } else {
-          return scoreBoard(gameTree.board, player);
+
+            return scoreBoard(gameTree.board, player);
         }
     }
 
     function calculateRatings(gameTree, player, scoreBoard) {
+
         return gameTree.moves.map(function (m) {
-          return ratePosition(force(m.gameTreePromise), player, scoreBoard);
+
+            return ratePosition(force(m.gameTreePromise), player, scoreBoard);
         });
     }
 
     function ratePositionWithAlphaBetaPruning(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
 
         if (1 <= gameTree.moves.length) {
-          var judge =
+
+            var judge =
             gameTree.player == player
             ? Math.max
             : Math.min;
-          var rate =
+
+            var rate =
             gameTree.player == player
             ? calculateMaxRatings
             : calculateMinRatings;
-          return judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
+
+            return judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
         } else {
-          return scoreBoard(gameTree.board, player);
+
+            return scoreBoard(gameTree.board, player);
         }
     }
 
