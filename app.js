@@ -438,19 +438,23 @@ var othello = {};
         var ratings = [];
         var newLowerLimit = lowerLimit;
         for (var i = 0; i < gameTree.moves.length; i++) {
-          var r = ratePositionPruning(
-            force(gameTree.moves[i].gameTreePromise),
-            player,
-            newLowerLimit,
-            upperLimit,
-            scoreBoard
-          );
-          cantidad_nodos_visitados++;
-          ratings.push(r);
-          if (upperLimit <= r)
-            break;
-          newLowerLimit = Math.max(r, newLowerLimit);
+
+            var r = ratePositionPruning(
+                force(gameTree.moves[i].gameTreePromise),
+                player,
+                newLowerLimit,
+                upperLimit,
+                scoreBoard
+            );
+
+            cantidad_nodos_visitados++;
+            ratings.push(r);
+            if (upperLimit <= r)
+                break;
+
+            newLowerLimit = Math.max(r, newLowerLimit);
         }
+
         return ratings;
     }
 
