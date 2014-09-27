@@ -434,7 +434,7 @@ var othello = {};
     }
 
     function calculateMaxRatings2(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
-
+        //mirar
         var ratings = [];
         var newLowerLimit = lowerLimit;
         for (var i = 0; i < gameTree.moves.length; i++) {
