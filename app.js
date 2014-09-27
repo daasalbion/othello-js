@@ -6,21 +6,24 @@ var othello = {};
     var cantidad_nodos_visitados = 0;
 
     function memoize(f) {
-    var memo = {};
-    var first = 0;
-    var second = 0;
-    return function () {
-      if (arguments[0] == 'stat')
-        return [first, second];
-      var key = JSON.stringify(arguments);
-      if (memo[key] === undefined) {
-        memo[key] = f.apply(this, arguments);
-        first++;
-      } else {
-        second++;
-      }
-      return memo[key];
-    };
+
+        var memo = {};
+        var first = 0;
+        var second = 0;
+        return function () {
+            if (arguments[0] == 'stat')
+                return [first, second];
+            var key = JSON.stringify(arguments);
+            if (memo[key] === undefined) {
+
+                memo[key] = f.apply(this, arguments);
+                first++;
+            } else {
+
+                second++;
+            }
+            return memo[key];
+        };
     }
 
     /*
@@ -281,12 +284,13 @@ var othello = {};
         }else if( config.algoritmo == 'minimax' ){
 
             algoritmo = {
+
                 findTheBestMove: function (gameTree) {
 
                     var diferenciaTiempo;
                     cantidad_nodos_visitados = 0;
                     var tiempoActual1 = new Date();
-                    var ratings = calculateMaxRatings(
+                    var ratings = calculateMaxRatings2(
                         limitGameTreeDepth(gameTree, config.level),
                         gameTree.player,
                         Number.MIN_VALUE,
@@ -392,12 +396,49 @@ var othello = {};
         }
     }
 
+    function ratePositionPruning(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
+
+        if (1 <= gameTree.moves.length) {
+
+            var judge = gameTree.player == player ? Math.max : Math.min;
+            var rate = gameTree.player == player ? calculateMaxRatings2 : calculateMinRatings2;
+
+            return judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
+
+        } else {
+
+            return scoreBoard(gameTree.board, player);
+
+        }
+    }
+
     function calculateMaxRatings(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
 
         var ratings = [];
         var newLowerLimit = lowerLimit;
         for (var i = 0; i < gameTree.moves.length; i++) {
           var r = ratePositionWithAlphaBetaPruning(
+            force(gameTree.moves[i].gameTreePromise),
+            player,
+            newLowerLimit,
+            upperLimit,
+            scoreBoard
+          );
+          cantidad_nodos_visitados++;
+          ratings.push(r);
+          if (upperLimit <= r)
+            break;
+          newLowerLimit = Math.max(r, newLowerLimit);
+        }
+        return ratings;
+    }
+
+    function calculateMaxRatings2(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
+
+        var ratings = [];
+        var newLowerLimit = lowerLimit;
+        for (var i = 0; i < gameTree.moves.length; i++) {
+          var r = ratePositionPruning(
             force(gameTree.moves[i].gameTreePromise),
             player,
             newLowerLimit,
@@ -431,6 +472,30 @@ var othello = {};
             break;
           newUpperLimit = Math.min(r, newUpperLimit);
         }
+        return ratings;
+    }
+
+    function calculateMinRatings2(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
+
+        var ratings = [];
+        var newUpperLimit = upperLimit;
+        for (var i = 0; i < gameTree.moves.length; i++) {
+            var r = ratePositionPruning(
+                force(gameTree.moves[i].gameTreePromise),
+                player,
+                upperLimit,
+                newUpperLimit,
+                scoreBoard
+            );
+
+            cantidad_nodos_visitados++;
+            ratings.push(r);
+            if (r <= lowerLimit)
+                break;
+
+            newUpperLimit = Math.min(r, newUpperLimit);
+        }
+
         return ratings;
     }
 
