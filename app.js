@@ -306,12 +306,6 @@ var profundidad = 4;
                         config.scoreBoard
                     );
 
-                   /* var ratings = calculateRatings(
-                        limitGameTreeDepth(gameTree, config.level),
-                        gameTree.player,
-                        config.scoreBoard
-                    );*/
-
                     console.log('minimax ratings: ' + ratings);
 
                     var tiempoActual2 = new Date();
@@ -326,6 +320,25 @@ var profundidad = 4;
                     console.log('move seleccionado: ' + JSON.stringify(gameTree.moves[ratings.indexOf(maxRating)]));
                     console.log('mirar' + JSON.stringify(debug));
                     return gameTree.moves[ratings.indexOf(maxRating)];
+                }
+            }
+        }else if( config.algoritmo == 'aleatorio' ){
+
+            var algoritmo = {
+
+                findTheBestMove: function (gameTree) {
+
+                    var diferenciaTiempo;
+                    cantidad_nodos_visitados = 0;
+                    var tiempoActual1 = new Date();
+                    var siguienteJugada = Math.floor(Math.random() * gameTree.moves.length);
+                    cantidad_nodos_visitados++;
+                    var tiempoActual2 = new Date();
+                    diferenciaTiempo = tiempoActual2.getTime() - tiempoActual1.getTime();
+                    $('#tiempo').val(diferenciaTiempo);
+                    $('#cantidad_nodos').val(cantidad_nodos_visitados);
+
+                    return gameTree.moves[siguienteJugada];
                 }
             }
         }
@@ -353,6 +366,11 @@ var profundidad = 4;
                 level: profundidad,
                 scoreBoard: scoreBoardByWeightedCount,
                 algoritmo: 'minimax'
+            }),
+            'aleatorio': makeAI({
+                level: '',
+                scoreBoard: '',
+                algoritmo: 'aleatorio'
             })
         };
     }
