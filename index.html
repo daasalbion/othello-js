@@ -30,7 +30,7 @@
         </div>
         <div style="float: left; margin-left: 66px">
           <div id="game-board"></div>
-          <div id="current-player">Jugador Actual: <span id="current-player-name">-</span></div>
+          <div style="margin-top: 20px" id="current-player">Jugador Actual: <span id="current-player-name">-</span></div>
           <div id="message"></div>
           <div id="console"></div>
         </div>
@@ -38,35 +38,29 @@
         <div id="player-type-forms">
           <label>
             Negras:
-            <select id="black-player-type">
-              <option value="human" selected>Human</option>
+            <select style="width: 163px" id="black-player-type">
+              <option value="human" selected>Humano</option>
               <option value="MiniMaxPodaAlfaBeta">MiniMaxPodaAlfaBeta</option>
-              <!--<option value="weighted-4">Weighted AI (looks ahead 4 moves)</option>-->
               <option value="minimax">MiniMax</option>
               <option value="aleatorio">Aleatorio</option>
             </select>
           </label>
-
+            <button id="swap-player-types-button" class="btn" type="button">⇅</button>
           <label>
             Blancas:
-            <select id="white-player-type">
-              <option value="human">Human</option>
+            <select style="width: 163px" id="white-player-type">
+              <option value="human">Humano</option>
               <option value="MiniMaxPodaAlfaBeta" selected>MiniMaxPodaAlfaBeta</option>
-              <!--<option value="weighted-4">Weighted AI (looks ahead 4 moves)</option>-->
               <option value="minimax" >MiniMax</option>
               <option value="aleatorio">Aleatorio</option>
             </select>
           </label>
         </div>
-        <button id="swap-player-types-button" class="btn" type="button">⇅</button>
+
       <label>
           Nivel:
-          <input id="profundidad" type="number" value="4">
+          <input style="width: 45px" id="profundidad" type="number" value="4">
       </label>
-        <div>
-          <input id="new-ai-url" type="text" value="random-ai.js">
-          <button id="add-new-ai-button" class="btn" type="button">Agregar nuevo IA</button>
-        </div>
         <button id="start-button" class="btn btn-primary" type="submit">Empezar juego nuevo</button>
       </div>
     </div>

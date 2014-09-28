@@ -357,11 +357,6 @@ var profundidad = 4;
                 scoreBoard: scoreBoardByWeightedCount,
                 algoritmo: 'minimax_poda_alfa_beta'
             }),
-            'weighted-4': makeAI({
-                level: profundidad,
-                scoreBoard: scoreBoardByWeightedCount,
-                algoritmo: 'minimax_poda_por_peso'
-            }),
             'minimax': makeAI({
                 level: profundidad,
                 scoreBoard: scoreBoardByWeightedCount,
