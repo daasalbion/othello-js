@@ -4,27 +4,7 @@ var othello = {};
 
     // Utilities {{{1
     var cantidad_nodos_visitados = 0;
-
-    function memoize(f) {
-
-        var memo = {};
-        var first = 0;
-        var second = 0;
-        return function () {
-            if (arguments[0] == 'stat')
-                return [first, second];
-            var key = JSON.stringify(arguments);
-            if (memo[key] === undefined) {
-
-                memo[key] = f.apply(this, arguments);
-                first++;
-            } else {
-
-                second++;
-            }
-            return memo[key];
-        };
-    }
+    var debug = {};
 
     /*
     * @expressionAsFunction makeGameTree
@@ -234,33 +214,48 @@ var othello = {};
     function scoreBoardBySimpleCount(board, player) {
 
         var opponent = nextPlayer(player);
-        return sum($.map(board, function (v) { return v == player;})) - sum($.map(board, function (v) { return v == opponent;}));
+        var jugadorActual = sum($.map(board, function (v) { return v == player;}));
+        var jugadorOponente = sum($.map(board, function (v) { return v == opponent;}))
+        console.log(jugadorActual);
+        console.log(jugadorOponente);
+        return  jugadorActual - jugadorOponente;
     }
 
     var weightTable =
-    (function () {
-      var t = {};
-      for (var x = 0; x < N; x++)
-        for (var y = 0; y < N; y++)
-          t[[x, y]] =
-            (x == 0 || x == N - 1 ? 10 : 1) *
-            (y == 0 || y == N - 1 ? 10 : 1);
-      return t;
-    })();
+        (function () {
+          var t = {};
+          for (var x = 0; x < N; x++)
+            for (var y = 0; y < N; y++)
+              t[[x, y]] = (x == 0 || x == N - 1 ? 10 : 1) * (y == 0 || y == N - 1 ? 10 : 1);
+          return t;
+        })();
 
     function scoreBoardByWeightedCount(board, player) {
 
         var opponent = nextPlayer(player);
         var wt = weightTable;
-        return sum($.map(board, function (v, p) {return (v == player) * wt[p];})) -
-               sum($.map(board, function (v, p) {return (v == opponent) * wt[p];}));
+        var jugadorActual = sum($.map(board, function (v, p) {return (v == player) * wt[p];}));
+        console.log('jugadorActual: ' + jugadorActual);
+        //console.log(board);
+        var jugadorOponente = sum($.map(board, function (v, p) {return (v == opponent) * wt[p];}));
+        console.log('jugadorOponente: ' + jugadorOponente);
+        //console.log(board);
+
+        return jugadorActual - jugadorOponente;
+
     }
 
     function makeAI(config) {
 
-        var algoritmo;
         if( config.algoritmo == 'minimax_poda_alfa_beta' ){
-            algoritmo = {
+
+            for(var i = 1; i<= config.level; i++)
+                debug[i] = 0;
+
+            console.log('alfabeta' + debug);
+
+            var algoritmo = {
+
                 findTheBestMove: function (gameTree) {
 
                     var diferenciaTiempo;
@@ -269,8 +264,8 @@ var othello = {};
                     var ratings = calculateMaxRatings(
                         limitGameTreeDepth(gameTree, config.level),
                         gameTree.player,
-                        Number.MIN_VALUE,
-                        Number.MAX_VALUE,
+                        -10000000,
+                        10000000,
                         config.scoreBoard
                     );
                     var maxRating = Math.max.apply(null, ratings);
@@ -282,18 +277,26 @@ var othello = {};
                     $('#cantidad_nodos').val(cantidad_nodos_visitados);
                     console.log('moves: ' + JSON.stringify(gameTree.moves));
                     console.log('move seleccionado: ' + JSON.stringify(gameTree.moves[ratings.indexOf(maxRating)]));
+                    console.log('mirar' + JSON.stringify(debug));
+
                     return gameTree.moves[ratings.indexOf(maxRating)];
                 }
             }
         }else if( config.algoritmo == 'minimax' ){
 
-            algoritmo = {
+            for(var i = 1; i<= config.level; i++)
+                debug[i] = 0;
+
+            console.log('minimax' + debug);
+
+            var algoritmo = {
 
                 findTheBestMove: function (gameTree) {
 
                     var diferenciaTiempo;
                     cantidad_nodos_visitados = 0;
                     var tiempoActual1 = new Date();
+
                     var ratings = calculateMaxRatings2(
                         limitGameTreeDepth(gameTree, config.level),
                         gameTree.player,
@@ -301,15 +304,26 @@ var othello = {};
                         Number.MAX_VALUE,
                         config.scoreBoard
                     );
-                    var maxRating = Math.max.apply(null, ratings);
+
+                   /* var ratings = calculateRatings(
+                        limitGameTreeDepth(gameTree, config.level),
+                        gameTree.player,
+                        config.scoreBoard
+                    );*/
+
                     console.log('minimax ratings: ' + ratings);
-                    console.log('minimax maxRating: ' + maxRating);
+
                     var tiempoActual2 = new Date();
                     diferenciaTiempo = tiempoActual2.getTime() - tiempoActual1.getTime();
+
                     $('#tiempo').val(diferenciaTiempo);
                     $('#cantidad_nodos').val(cantidad_nodos_visitados);
+
+                    var maxRating = Math.max.apply(null, ratings);
+                    console.log('minimax maxRating: ' + maxRating);
                     console.log('moves: ' + JSON.stringify(gameTree.moves));
                     console.log('move seleccionado: ' + JSON.stringify(gameTree.moves[ratings.indexOf(maxRating)]));
+                    console.log('mirar' + JSON.stringify(debug));
                     return gameTree.moves[ratings.indexOf(maxRating)];
                 }
             }
@@ -320,19 +334,19 @@ var othello = {};
 
     var aiTable = {
 
-        'test-4': makeAI({
-            level: 4,
-            scoreBoard: scoreBoardBySimpleCount,
-            algoritmo: 'minimax_poda_alfa_beta'
-        }),
-        'weighted-4': makeAI({
-            level: 4,
+        'MiniMaxPodaAlfaBeta': makeAI({
+            level: $('#profundidad').val(),
             scoreBoard: scoreBoardByWeightedCount,
             algoritmo: 'minimax_poda_alfa_beta'
         }),
+        'weighted-4': makeAI({
+            level: $('#profundidad').val(),
+            scoreBoard: scoreBoardByWeightedCount,
+            algoritmo: 'minimax_poda_por_peso'
+        }),
         'minimax': makeAI({
-            level: 4,
-            scoreBoard: scoreBoardBySimpleCount,
+            level: $('#profundidad').val(),
+            scoreBoard: scoreBoardByWeightedCount,
             algoritmo: 'minimax'
         })
     };
@@ -341,6 +355,14 @@ var othello = {};
     * Genera el arbol ya con el limite de profundidad de busqueda
     * */
     function limitGameTreeDepth(gameTree, depth) {
+        var variable = 0;
+        console.log('jugador: ' + gameTree.player + ' movimientos: ' + JSON.stringify(gameTree.moves));
+        if ( depth == 0 ){
+
+            console.log('nivel 0');
+            console.log(gameTree.board);
+        }
+
 
         return {
           board: gameTree.board,
@@ -349,6 +371,9 @@ var othello = {};
             depth == 0
             ? []
             : gameTree.moves.map(function (m) {
+                variable++;
+                console.log('profundidad: ' + depth + ' nodo: (' + m.x + ',' + m.y + ')');
+                debug[depth]++;
                 return {
                   isPassingMove: m.isPassingMove,
                   x: m.x,
@@ -367,25 +392,10 @@ var othello = {};
 
             var choose = gameTree.player == player ? Math.max : Math.min;
             return choose.apply(null, calculateRatings(gameTree, player, scoreBoard));
-        } else {
-
-            return scoreBoard(gameTree.board, player);
-        }
-    }
-
-    function ratePosition(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
-
-        if (1 <= gameTree.moves.length) {
-
-            var judge = gameTree.player == player ? Math.max : Math.min;
-            var rate = gameTree.player == player ? calculateMaxRatings2 : calculateMinRatings2;
-
-            return judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
 
         } else {
 
             return scoreBoard(gameTree.board, player);
-
         }
     }
 
@@ -397,7 +407,7 @@ var othello = {};
         });
     }
 
-    function ratePositionWithAlphaBetaPruning(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
+    function ratePositionWithAlphaBetaPruning(gameTree, player, alfa, beta, scoreBoard) {
 
         if (1 <= gameTree.moves.length) {
 
@@ -411,42 +421,98 @@ var othello = {};
             ? calculateMaxRatings
             : calculateMinRatings;
 
-            return judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
+            return judge.apply(null, rate(gameTree, player, alfa, beta, scoreBoard));
         } else {
 
             return scoreBoard(gameTree.board, player);
         }
     }
 
-
-    function calculateMaxRatings(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
+    function calculateMaxRatings(gameTree, player, alfa, beta, scoreBoard) {
 
         var ratings = [];
-        var newLowerLimit = lowerLimit;
+
         for (var i = 0; i < gameTree.moves.length; i++) {
-          var r = ratePositionWithAlphaBetaPruning(
-            force(gameTree.moves[i].gameTreePromise),
-            player,
-            newLowerLimit,
-            upperLimit,
-            scoreBoard
-          );
-          cantidad_nodos_visitados++;
-          ratings.push(r);
-          if (upperLimit <= r)
-            break;
-          newLowerLimit = Math.max(r, newLowerLimit);
+
+            var alfa = ratePositionWithAlphaBetaPruning(
+                force(gameTree.moves[i].gameTreePromise),
+                player,
+                alfa,
+                beta,
+                scoreBoard
+            );
+
+            cantidad_nodos_visitados++;
+            console.log('alfa');
+            console.log('lowerLimit :' + alfa);
+            console.log('upperLimit :' + beta);
+            ratings.push(alfa);
+
+            if (beta <= alfa){
+                console.log('break');
+                break;
+            }
         }
         return ratings;
+    }
+
+    function calculateMinRatings(gameTree, player, alfa, beta, scoreBoard) {
+
+        var ratings = [];
+
+        for (var i = 0; i < gameTree.moves.length; i++) {
+
+            var beta = ratePositionWithAlphaBetaPruning(
+                force(gameTree.moves[i].gameTreePromise),
+                player,
+                alfa,
+                beta,
+                scoreBoard
+            );
+
+            console.log('beta');
+            console.log('lowerLimit :' + alfa);
+            console.log('upperLimit :' + beta);
+
+            cantidad_nodos_visitados++;
+            ratings.push(beta);
+
+            if (beta <= alfa){
+
+                console.log('break');
+                break;
+            }
+        }
+
+        return ratings;
+    }
+
+    function miniMax(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
+
+        if (1 <= gameTree.moves.length) {
+
+            var judge = gameTree.player == player ? Math.max : Math.min;
+            var rate = gameTree.player == player ? calculateMaxRatings2 : calculateMinRatings2;
+
+            var valor = judge.apply(null, rate(gameTree, player, lowerLimit, upperLimit, scoreBoard));
+
+            return valor;
+
+        } else {
+
+            return scoreBoard(gameTree.board, player);
+
+        }
     }
 
     function calculateMaxRatings2(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
         //mirar
         var ratings = [];
         var newLowerLimit = lowerLimit;
+
         for (var i = 0; i < gameTree.moves.length; i++) {
 
-            var r = ratePosition(
+            var r = miniMax(
                 force(gameTree.moves[i].gameTreePromise),
                 player,
                 newLowerLimit,
@@ -454,35 +520,17 @@ var othello = {};
                 scoreBoard
             );
 
-            cantidad_nodos_visitados++;
+            console.log('alfa :' + r);
+
             ratings.push(r);
+
+            cantidad_nodos_visitados++;
             /*if (upperLimit <= r)
-                break;*/
+             break;*/
 
             newLowerLimit = Math.max(r, newLowerLimit);
         }
 
-        return ratings;
-    }
-
-    function calculateMinRatings(gameTree, player, lowerLimit, upperLimit, scoreBoard) {
-
-        var ratings = [];
-        var newUpperLimit = upperLimit;
-        for (var i = 0; i < gameTree.moves.length; i++) {
-          var r = ratePositionWithAlphaBetaPruning(
-            force(gameTree.moves[i].gameTreePromise),
-            player,
-            upperLimit,
-            newUpperLimit,
-            scoreBoard
-          );
-          cantidad_nodos_visitados++;
-          ratings.push(r);
-          if (r <= lowerLimit)
-            break;
-          newUpperLimit = Math.min(r, newUpperLimit);
-        }
         return ratings;
     }
 
@@ -491,7 +539,8 @@ var othello = {};
         var ratings = [];
         var newUpperLimit = upperLimit;
         for (var i = 0; i < gameTree.moves.length; i++) {
-            var r = ratePosition(
+
+            var r = miniMax(
                 force(gameTree.moves[i].gameTreePromise),
                 player,
                 upperLimit,
@@ -504,7 +553,7 @@ var othello = {};
             /*if (r <= lowerLimit)
                 break;*/
 
-            //newUpperLimit = Math.min(r, newUpperLimit);
+            newUpperLimit = Math.min(r, newUpperLimit);
         }
 
         return ratings;
@@ -646,10 +695,12 @@ var othello = {};
 
     function chooseMoveByAI(gameTree, ai) {
         $('#message').text('Pensando...');
-        shiftToNewGameTree(
-          force(ai.findTheBestMove(gameTree).gameTreePromise)
-        );
+        setTimeout( function(){
 
+            shiftToNewGameTree(
+                force(ai.findTheBestMove(gameTree).gameTreePromise)
+            );
+        }, 2000);
     }
 
     function showWinner(board) {
@@ -720,6 +771,41 @@ var othello = {};
     resetGame();
     drawGameBoard(makeInitialGameBoard(), '-', []);
 
-})();
+    /*
+     * función alfabeta(nodo, profundidad, α, β, jugadorMaximizador)
+     si nodo es un nodo terminal o profundidad = 0
+     devolver el valor heurístico del nodo
+     si jugadorMaximizador
+     para cada hijo de nodo
+     α := max(α, alfabeta(hijo, profundidad-1, α, β, FALSE))
+     si β≤α
+     break (* poda β *)
+     devolver α
+     si no
+     para cada hijo de nodo
+     β := min(β, alfabeta(hijo, profundidad-1, α, β, TRUE))
+     si β≤α
+     break (* poda α *)
+     devolver β
+     (* Llamada inicial *)
+     alfabeta(origen, profundidad, -infinito, +infinito, TRUE)
+     * */
+
+    /*function podaAlfaBeta( gameTree, alfa, beta, jugadorMaximizador, scoreBoard){
+
+     if( gameTree.moves.length == 0 ){
+
+     return scoreBoard(gameTree.board, jugadorMaximizador);
+
+     }else if( jugadorMaximizador == gameTree.player ){
+
+     for (var i = 0; i < gameTree.moves.length; i++) {
+
+     alfa = Math.max(podaAlfaBeta())
+     }
+     }
+     }*/
+
+ })();
 
 // vim: expandtab softtabstop=2 shiftwidth=2 foldmethod=marker
