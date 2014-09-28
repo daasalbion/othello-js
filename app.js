@@ -1,4 +1,5 @@
 var othello = {};
+var profundidad = 4;
 
 (function () {
 
@@ -332,24 +333,35 @@ var othello = {};
         return algoritmo;
     }
 
-    var aiTable = {
+    var aiTable;
 
-        'MiniMaxPodaAlfaBeta': makeAI({
-            level: $('#profundidad').val(),
-            scoreBoard: scoreBoardByWeightedCount,
-            algoritmo: 'minimax_poda_alfa_beta'
-        }),
-        'weighted-4': makeAI({
-            level: $('#profundidad').val(),
-            scoreBoard: scoreBoardByWeightedCount,
-            algoritmo: 'minimax_poda_por_peso'
-        }),
-        'minimax': makeAI({
-            level: $('#profundidad').val(),
-            scoreBoard: scoreBoardByWeightedCount,
-            algoritmo: 'minimax'
-        })
-    };
+    function setearAiTable(){
+
+        aiTable = {
+
+            'MiniMaxPodaAlfaBeta': makeAI({
+                level: profundidad,
+                scoreBoard: scoreBoardByWeightedCount,
+                algoritmo: 'minimax_poda_alfa_beta'
+            }),
+            'weighted-4': makeAI({
+                level: profundidad,
+                scoreBoard: scoreBoardByWeightedCount,
+                algoritmo: 'minimax_poda_por_peso'
+            }),
+            'minimax': makeAI({
+                level: profundidad,
+                scoreBoard: scoreBoardByWeightedCount,
+                algoritmo: 'minimax'
+            })
+        };
+    }
+
+    $('#profundidad').change(
+        function(){
+            profundidad = $('#profundidad').val();
+        }
+    );
 
     /*
     * Genera el arbol ya con el limite de profundidad de busqueda
@@ -362,7 +374,6 @@ var othello = {};
             console.log('nivel 0');
             console.log(gameTree.board);
         }
-
 
         return {
           board: gameTree.board,
@@ -756,6 +767,7 @@ var othello = {};
 
     function startNewGame() {
 
+        setearAiTable();
         $('#preference-pane').addClass('disabled');
         $('#preference-pane :input').attr('disabled', 'disabled');
         playerTypeTable[BLACK] = $('#black-player-type').val();
@@ -771,40 +783,7 @@ var othello = {};
     resetGame();
     drawGameBoard(makeInitialGameBoard(), '-', []);
 
-    /*
-     * función alfabeta(nodo, profundidad, α, β, jugadorMaximizador)
-     si nodo es un nodo terminal o profundidad = 0
-     devolver el valor heurístico del nodo
-     si jugadorMaximizador
-     para cada hijo de nodo
-     α := max(α, alfabeta(hijo, profundidad-1, α, β, FALSE))
-     si β≤α
-     break (* poda β *)
-     devolver α
-     si no
-     para cada hijo de nodo
-     β := min(β, alfabeta(hijo, profundidad-1, α, β, TRUE))
-     si β≤α
-     break (* poda α *)
-     devolver β
-     (* Llamada inicial *)
-     alfabeta(origen, profundidad, -infinito, +infinito, TRUE)
-     * */
 
-    /*function podaAlfaBeta( gameTree, alfa, beta, jugadorMaximizador, scoreBoard){
-
-     if( gameTree.moves.length == 0 ){
-
-     return scoreBoard(gameTree.board, jugadorMaximizador);
-
-     }else if( jugadorMaximizador == gameTree.player ){
-
-     for (var i = 0; i < gameTree.moves.length; i++) {
-
-     alfa = Math.max(podaAlfaBeta())
-     }
-     }
-     }*/
 
  })();
 
